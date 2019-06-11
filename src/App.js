@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
+import Page from '../src/components/page/Page';
+import {UserContecst} from './context';
+import LoginForm from './components/page/LoginForm';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: null,
+      lastName: null
+    }
+  }
+
+  componentDidMount() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://jsonplaceholder.typicode.com/users');
+    xhr.addEventListener('load', ()=> {
+      const data = JSON.parse(xhr.response);
+      const [name, lastName] = data[0].name.split(' ');
+      this.setState({
+       name: name,
+       lastName: lastName
+      });
+    })
+    xhr.send();
+  }
+
+  render() {
+    const contextObject = {
+      name: 'Olga',
+      lastName: 'Mazurenko'
+    };
+    return (
+      <UserContecst.Provider value={this.state}>
+        <LoginForm /> 
+        <Page />
+      </UserContecst.Provider>
+    );
+  }
 }
 
 export default App;
